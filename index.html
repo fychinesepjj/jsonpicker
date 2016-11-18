@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+</body>
+<script src="js/utils.js"></script>
+<script src="js/jspicker.js"></script>
+<script>
+    //t.pick({a:1,b:[1,2,3,4],c:{f:5,d:{f:1,ff:2},c:2},e:[{r:1,a:{c:1, f:1}},{r:2,a:{c:2, f:2}},{r:3, a:{c:2, d:2}}]}, 'e.(r|a)');
+    var data = {
+        a: 'a',
+        b: ['b1', 'b2', 'b3', 'b4', 'b5'],
+        c: {
+            c1: 'c1',
+            c2: {
+                c2_1: 'c2_1',
+                c2_2: 'c2_2'
+            }
+        },
+        d: [
+            {
+                d1: 'd1',
+                d2: {
+                    d2_1: 'd2_1',
+                    d2_2: 'd2_2'
+                }
+            },
+            {
+                d1: 'd1',
+                d3: {
+                    d3_1: 'c3_1',
+                    d3_2: 'c3_2'
+                }
+            },
+            {
+                d1: 'd1',
+                d2: {
+                    d2_1: 'd2_1',
+                    d2_2: 'd2_2'
+                },
+                d3: {
+                    d3_1: 'd3_1'
+                }
+            }
+        ]
+    };
+    var ret = jsPicker.pick(data, 'a');
+    console.log(ret);
+</script>
+</html>
