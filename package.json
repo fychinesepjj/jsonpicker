@@ -1,6 +1,6 @@
 {
   "name": "jspicker",
-  "version": "0.1",
+  "description": "js object picker",
   "devDependencies": {
     "eslint": "^3.10.2",
     "eslint-config-standard": "^6.2.1",
