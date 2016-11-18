@@ -22,7 +22,10 @@
         },
         d: [
             {
-                d1: 'd1',
+                d1: {
+                    d2_1: 'd1_1',
+                    d2_2: 'd1_2'
+                },
                 d2: {
                     d2_1: 'd2_1',
                     d2_2: 'd2_2'
@@ -48,6 +51,8 @@
         ]
     };
     var ret = jsPicker.pick(data, 'a');
+    //jsPicker.pick(data, 'd.(d2|d1).(d2_1|d2_2)');
+    //jsPicker.pick(data, 'c.(c1|c2).(c2_1|c2_2)');
     console.log(ret);
 </script>
 </html>

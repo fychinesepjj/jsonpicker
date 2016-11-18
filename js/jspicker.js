@@ -19,34 +19,33 @@
             var path = thisUtils.trim(pathStr, '.');
             var pathArray = path.split('.');
             function innerPick(data, pathArray) {
+                var hasSubPath = !!pathArray.length;
                 if (thisUtils.isPlainObject(data)) {
-                    var dotName = pathArray.shift();
-                    var reg = /\(([^\)]*)\)/g;
-                    var matched = reg.exec(dotName);
+                    var tmp = {};
+                    var curPathName = pathArray.shift();
+                    hasSubPath = !!pathArray.length;
+                    var parenthesisRegExp = /\(([^\)]*)\)/;
+                    var matched = parenthesisRegExp.exec(curPathName);
                     if(matched){
                         var arr = matched[1].split('|');
-                        var t = {};
                         while(arr.length) {
-                            var k = arr.shift();
-                            var v = null;
-                            if (pathArray.length){
-                                v = innerPick(data[k], pathArray);
+                            var subPathName = arr.shift();
+                            var subPathValue = null;
+                            if (hasSubPath){
+                                subPathValue = innerPick(data[subPathName], pathArray.slice());
+                                subPathValue && (tmp[subPathName] = subPathValue);
                             } else {
-                                v = data[k];
-                            }
-                            if (v) {
-                                t[k] = v;
+                                tmp[subPathName] = data[subPathName];
                             }
                         }
-                        return Object.keys(t).length ? t : null;
+                        return Object.keys(tmp).length ? tmp : null;
                     } else {
-                        if (data[dotName]) {
-                            if (pathArray.length) {
-                                return innerPick(data[dotName], pathArray);
+                        if (data[curPathName]) {
+                            if (hasSubPath) {
+                                return innerPick(data[curPathName], pathArray);
                             } else {
-                                var ret  = {};
-                                ret[dotName] = data[dotName];
-                                return ret;
+                                tmp[curPathName] = data[curPathName];
+                                return tmp;
                             }
                         } else {
                             return null;
@@ -54,7 +53,7 @@
                     }
                 } else if (thisUtils.isArray(data)) {
                     var items = [];
-                    data.forEach(function (item) {
+                    data.forEach(function forEach(item) {
                         var result = innerPick(item, pathArray.slice());
                         if(result != null) {
                             items.push(result);
@@ -62,7 +61,7 @@
                     });
                     return items.length ? items : null;
                 } else {
-                    if(pathArray.length){
+                    if(hasSubPath){
                         return null;
                     }
                     return data;
