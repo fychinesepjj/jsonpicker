@@ -24,18 +24,20 @@
                     var tmp = {};
                     var curPathName = pathArray.shift();
                     hasSubPath = !!pathArray.length;
-                    var parenthesisRegExp = /\(([^\)]*)\)/;
-                    var matched = parenthesisRegExp.exec(curPathName);
-                    if(matched){
-                        var arr = matched[1].split('|');
-                        while(arr.length) {
-                            var subPathName = arr.shift();
+                    var hasParenthesis =  /\([^\)]*\)/.test(curPathName);
+                    if(hasParenthesis){
+                        var arr = null;
+                        var subNameValueReg = /([_0-9a-zA-Z-]+)\s*=?\s*([_0-9a-zA-Z-]*)/g;
+                        while(arr = subNameValueReg.exec(curPathName)) {
+                            var pathName = arr[1];
+                            var newPathName = arr[2];
+                            newPathName = newPathName ? newPathName : pathName;
                             var subPathValue = null;
                             if (hasSubPath){
-                                subPathValue = innerPick(data[subPathName], pathArray.slice());
-                                subPathValue && (tmp[subPathName] = subPathValue);
+                                subPathValue = innerPick(data[pathName], pathArray.slice());
+                                subPathValue && (tmp[newPathName] = subPathValue);
                             } else {
-                                tmp[subPathName] = data[subPathName];
+                                tmp[newPathName] = data[pathName];
                             }
                         }
                         return Object.keys(tmp).length ? tmp : null;
