@@ -28,6 +28,12 @@
         "standard",
         "promise"
     ],
+    "globals": {
+        "chai": true,
+        "define": true,
+        "require": true,
+        "jsonPicker": true
+    },
     "env": {
         "browser": true,
         "node": true,

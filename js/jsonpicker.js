@@ -2,25 +2,48 @@
     if (typeof define === 'function' && define.amd) {
 
         // AMD
-        define(['utils'], factory);
+        define([], factory);
     } else if (typeof exports === 'object') {
 
         // Node, CommonJS之类的
-        module.exports = factory(require('utils'));
+        module.exports = factory();
     } else {
 
         // 浏览器全局变量(root 即 window)
-        root.jsPicker = factory(root.Utils);
+        root.jsonPicker = factory();
     }
-}(this, function (Utils) {
-    var thisUtils = Utils;
-    var jsPicker = {
+}(this, function () {
+    var utils = {
+        trimRight: function trimRight(innerStr, keyWord) {
+            var escapedWord = keyWord.replace(/([\[\]\/.()])/g, '\\$1');
+            var reg = new RegExp(escapedWord + '\\s*$');
+            return innerStr.replace(reg, '');
+        },
+        trimLeft: function trimLeft(innerStr, keyWord) {
+            var escapedWord = keyWord.replace(/([\[\]\/.()])/g, '\\$1');
+            var reg = new RegExp('^\\s*' + escapedWord);
+            return innerStr.replace(reg, '');
+        },
+        trim: function trim(innerStr, keyWord) {
+            var str = this.trimLeft(innerStr, keyWord);
+            str = this.trimRight(str, keyWord);
+            return str;
+        },
+        isArray: function isArray(obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        },
+        isPlainObject: function isPlainObject(obj) {
+            return !!obj && Object.prototype.toString.call(obj) === '[object Object]';
+        }
+    };
+
+    var jsonPicker = {
         pick: function pick(data, pathStr) {
-            var path = thisUtils.trim(pathStr, '.');
+            var path = utils.trim(pathStr, '.');
             var pathArray = path.split('.');
             function innerPick(data, pathArray) {
                 var hasSubPath = !!pathArray.length;
-                if (thisUtils.isPlainObject(data)) {
+                if (utils.isPlainObject(data)) {
                     var tmp = {};
                     var curPathName = pathArray.shift();
                     hasSubPath = !!pathArray.length;
@@ -28,7 +51,8 @@
                     if(hasParenthesis){
                         var arr = null;
                         var subNameValueReg = /([_0-9a-zA-Z-]+)\s*=?\s*([_0-9a-zA-Z-]*)/g;
-                        while(arr = subNameValueReg.exec(curPathName)) {
+                        arr = subNameValueReg.exec(curPathName);
+                        while(arr) {
                             var pathName = arr[1];
                             var newPathName = arr[2];
                             newPathName = newPathName ? newPathName : pathName;
@@ -39,10 +63,11 @@
                             } else {
                                 tmp[newPathName] = data[pathName];
                             }
+                            arr = subNameValueReg.exec(curPathName);
                         }
                         return Object.keys(tmp).length ? tmp : null;
                     } else {
-                        if (data[curPathName]) {
+                        if (curPathName in data) {
                             if (hasSubPath) {
                                 return innerPick(data[curPathName], pathArray);
                             } else {
@@ -53,7 +78,7 @@
                             return null;
                         }
                     }
-                } else if (thisUtils.isArray(data)) {
+                } else if (utils.isArray(data)) {
                     var items = [];
                     data.forEach(function forEach(item) {
                         var result = innerPick(item, pathArray.slice());
@@ -72,5 +97,5 @@
             return innerPick(data, pathArray);
         }
     };
-    return jsPicker;
+    return jsonPicker;
 }));

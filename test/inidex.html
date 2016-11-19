@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jsonPicker Testing</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+</head>
+<body>
+   <div id="mocha"></div>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <!-- load code here -->
+    <script src="../js/jsonpicker.js"></script>
+    <!-- load test files here -->
+    <script src="./test.jsonpicker.js"></script>
+    <script>
+      mocha.run();
+    </script>
+</body>
+</html>
