@@ -20,7 +20,8 @@
         "new-cap": [2, { "newIsCap": true, "capIsNew": false }],
         "new-parens": 1,
         "no-dupe-args": 2,
-        "no-inner-declarations": 2
+        "no-inner-declarations": 2,
+        "lines-around-comment": 2
     },
     "installedESLint": true,
     "plugins": [
