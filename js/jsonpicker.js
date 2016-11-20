@@ -34,11 +34,20 @@
         },
         isPlainObject: function isPlainObject(obj) {
             return !!obj && Object.prototype.toString.call(obj) === '[object Object]';
+        },
+        isString: function isPlainObject(obj) {
+            return Object.prototype.toString.call(obj) === '[object String]';
         }
     };
 
     var jsonPicker = {
         pick: function pick(data, pathStr) {
+            if (!utils.isPlainObject(data)) {
+                throw new TypeError('parameter type error: search data should be a plain object!');
+            }
+            if (!utils.isString(pathStr)) {
+                throw new TypeError('parameter type error: search path must be a string type!');
+            }
             var path = utils.trim(pathStr, '.');
             var pathArray = path.split('.');
             function innerPick(data, pathArray) {
