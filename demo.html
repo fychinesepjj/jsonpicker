@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        body, pre, code{
+            font-family: Consolas, "微软雅黑";
+        }
+        h1, h2, h3, pre {margin: 0;}
+        pre[method] {
+            color: green;
+            font-weight: bold;
+        }
+
+        pre[result] {
+            color: blue;
+        }
+    </style>
+    <script>
+    var jsonData = {
+        "name": null,
+        "age": "",
+        "seller": "1000",
+        "orderNo": "20161118945026",
+        "totalmoney": "51.00",
+        "methodType": [1, 3, 5, 7],
+        "payMethod": {
+            "detail": {
+                "money": "47.20",
+                "count": null,
+                "name": "cash"
+            },
+            "method": {
+                "name": "card"
+            }
+        },
+        "goods": [
+            {
+                "id": 1,
+                "name": "固定套餐",
+                "price": "12.00",
+                "count": 2,
+                "money": "24.00",
+                "items": [
+                    {
+                        "name": "薯片",
+                        "count": 2
+                    },
+                    {
+                        "name": "雪碧",
+                        "count": 2
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "name": "薯片套餐",
+                "price": "8.00",
+                "count": 1,
+                "money": "8.00",
+                "items": [
+                    {
+                        "name": "可乐",
+                        "count": 1,
+                        "price": 1.5
+                    }
+                ]
+            }
+        ]
+    };
+    </script>
+    <script src="./js/jsonpicker.js"></script>
+</head>
+<body>
+    <h2>Data</h2>
+    <pre result>
+    <code>
+    var jsonData = {
+        "name": null,
+        "age": "",
+        "seller": "1000",
+        "orderNo": "20161118945026",
+        "totalmoney": "51.00",
+        "methodType": [1, 3, 5, 7],
+        "payMethod": {
+            "detail": {
+                "money": "47.20",
+                "count": null,
+                "name": "cash"
+            },
+            "method": {
+                "name": "card"
+            }
+        },
+        "goods": [
+            {
+                "id": 1,
+                "name": "固定套餐",
+                "price": "12.00",
+                "count": 2,
+                "money": "24.00",
+                "items": [
+                    {
+                        "name": "薯片",
+                        "count": 2
+                    },
+                    {
+                        "name": "雪碧",
+                        "count": 2
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "name": "薯片套餐",
+                "price": "8.00",
+                "count": 1,
+                "money": "8.00",
+                "items": [
+                    {
+                        "name": "可乐",
+                        "count": 1,
+                        "price": 1.5
+                    }
+                ]
+            }
+        ]
+    };
+    </code>
+    </pre>
+    <div>
+        <h2>Usage:</h2>
+        <pre method><code>jsonPicker.pick(jsonData, 'seller')</code></pre>
+        <pre result><code>{"seller": "1000"}</code></pre><br/>
+
+        <pre method><code>jsonPicker.pick(jsonData, 'payMethod.detail')</code></pre>
+        <pre result><code>{"detail":{"money":"47.20","count":null,"name":"cash"}}</code></pre><br/>
+
+        <pre method><code>jsonPicker.pick(jsonData, 'payMethod.(detail|method).name')</code></pre>
+        <pre result><code>{"detail":{"name":"cash"},"method":{"name":"card"}}</code></pre><br/>
+
+        <pre method><code>jsonPicker.pick(jsonData, '(goods).(name|items).(name|price)')</code></pre>
+        <pre result><code>{"goods":[{"items":[{"name":"薯片"},{"name":"雪碧"}]},{"items":[{"name":"可乐","price":1.5}]}]}</code></pre><br/>
+
+        <pre method><code>jsonPicker.pick(jsonData, '(seller=newSeller)')</code></pre>
+        <pre result><code>{"newSeller": "1000"}</code></pre><br/>
+        
+        <pre method><code>jsonPicker.pick(jsonData, 'payMethod.(detail=newDetail|method=newMethod).(name=newName)')</code></pre>
+        <pre result><code>{"newDetail":{"newName":"cash"},"newMethod":{"newName":"card"}}</code></pre><br/>
+    </div>
+</body>
+</html>

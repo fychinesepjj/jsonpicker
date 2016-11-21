@@ -9,10 +9,13 @@ describe('js/jsonpicker.js', function () {
         "totalmoney": "51.00",
         "methodType": [1, 3, 5, 7],
         "payMethod": {
-            detail: {
+            "detail": {
                 "money": "47.20",
-                "count": 0,
+                "count": null,
                 "name": "cash"
+            },
+            "method": {
+                "name": "card"
             }
         },
         "goods": [
@@ -42,7 +45,8 @@ describe('js/jsonpicker.js', function () {
                 "items": [
                     {
                         "name": "可乐",
-                        "count": 1
+                        "count": 1,
+                        "price": 1.5
                     }
                 ]
             }
@@ -87,6 +91,8 @@ describe('js/jsonpicker.js', function () {
         expect(jp('fakeName')).to.be.a('null');
         expect(jp('payMethod.fakeName')).to.be.a('null');
         expect(jp('goods.fakeName')).to.be.a('null');
+        // key is data[goods.fakeName] not data[fakeName]
+        expect(jp('(goods.fakeName)')).to.be.a('null');
     });
 
     it('should return a object when path exist', function() {
@@ -99,7 +105,7 @@ describe('js/jsonpicker.js', function () {
         expect(jp('payMethod.detail.name')).to.be.a('object');
     });
 
-    it('should return last matched object when use search path', function() {
+    it('should return the last path object when use search path', function() {
         expect(jp('orderNo')).to.have.property('orderNo', '20161118945026');
 
         expect(jp('methodType')).to.have.property('methodType')
@@ -115,7 +121,7 @@ describe('js/jsonpicker.js', function () {
 
         expect(jp('payMethod.detail')).to.have.property('detail')
             .that.is.an('object')
-            .that.deep.equals({"money": "47.20", "count": 0, "name": "cash"});
+            .that.deep.equals({"money": "47.20", "count": null, "name": "cash"});
 
         expect(jp('goods')).to.have.property('goods')
             .that.is.an('array')
@@ -133,8 +139,8 @@ describe('js/jsonpicker.js', function () {
             .with.deep.property('[0]')
                 .that.is.an('object')
                 .with.property('items')
-                .that.is.an('array')
-                .that.have.lengthOf(2);
+                    .that.is.an('array')
+                    .that.have.lengthOf(2);
 
         expect(jp('goods.items.name')).to.be.a('array')
             .that.have.lengthOf(2)
@@ -142,7 +148,134 @@ describe('js/jsonpicker.js', function () {
                 .that.is.an('array')
                 .that.have.lengthOf(2)
                 .with.deep.property('[0]')
+                    .that.is.an('object')
+                    .with.property('name');
+    });
+
+    it('should return the matched object when use parentheses', function() {
+        // the same to jp('name')
+        expect(jp('(name)')).to.be.a('object')
+            .with.property('name');
+            
+        // the same to jp('payMethod.detail')
+        expect(jp('payMethod.(detail)')).to.be.a('object')
+            .with.property('detail');
+
+        // the same to jp('payMethod.detail.name')
+        expect(jp('payMethod.detail.(name)')).to.be.a('object')
+            .with.property('name');
+        
+        // {"detail": {"name": "cash"}}
+        expect(jp('payMethod.(detail).(name)')).to.be.a('object')
+            .with.property('detail')
                 .that.is.an('object')
                 .with.property('name');
+        
+        // {"detail":{"name":"cash"},"method":{"name":"card"}}
+        expect(jp('payMethod.(detail|method).name')).to.be.a('object')
+            .with.all.keys('detail', 'method')
+            .with.property('detail')
+                .that.is.an('object')
+                .with.property('name');
+        
+        // {"detail":{"name":"cash"},"method":{"name":"card"}}
+        expect(jp('payMethod.(detail|method).name')).to.be.a('object')
+            .with.all.keys('detail', 'method')
+            .with.property('method')
+                .that.is.an('object')
+                .with.property('name');
+
+        // {"detail":{"name":"cash", "count": 0},"method":{"name":"card"}}
+        expect(jp('payMethod.(detail|method).(name|count)')).to.be.a('object')
+            .with.all.keys('detail', 'method')
+            .with.property('method')
+                .that.is.an('object')
+                .that.not.include.keys('count');
+        
+        // the same to jp('goods')
+        expect(jp('(goods)')).to.be.a('object')
+            .with.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2);
+
+        // {"goods":[{"name":"固定套餐","items":[{"name":"薯片","count":2},{"name":"雪碧","count":2}]},{"name":"薯片套餐","items":[{"name":"可乐","count":1}]}]}
+        expect(jp('(goods).(name|items)')).to.be.a('object')
+            .with.deep.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2)
+                .with.deep.property('[0]')
+                .with.all.keys('name', 'items')
+                .with.property('items')
+                    .that.is.an('array');
+
+        // {"goods":[{"items":[{"name":"薯片"},{"name":"雪碧"}]},{"items":[{"name":"可乐","price":1.5}]}]}
+        expect(jp('(goods).(name|items).(name|price)')).to.be.a('object')
+            .with.deep.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2)
+                .with.deep.property('[0]')
+                .with.all.keys('items')
+                .with.property('items')
+                    .that.is.an('array')
+                    .that.have.lengthOf(2)
+                    .with.deep.property('[0]')
+                        .with.all.keys('name');
+        
+        expect(jp('(goods).(name|items).(name|price)')).to.be.a('object')
+            .with.deep.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2)
+                .with.deep.property('[1]')
+                .with.all.keys('items')
+                .with.property('items')
+                    .that.is.an('array')
+                    .that.have.lengthOf(1)
+                    .with.deep.property('[0]')
+                        .with.all.keys('name', 'price');
+    });
+
+    it('should rename the matched object when use equals sign', function() {
+        expect(jp('(seller=anotherSeller)')).to.be.a('object').with.all.keys('anotherSeller');
+        expect(jp('(seller= anotherSeller)')).to.be.a('object').with.all.keys('anotherSeller');
+        expect(jp('(seller = anotherSeller)')).to.be.a('object').with.all.keys('anotherSeller');
+        expect(jp('( seller = anotherSeller )')).to.be.a('object').with.all.keys('anotherSeller');
+        expect(jp('payMethod.(detail=newDetail)')).to.be.a('object').with.all.keys('newDetail');
+        expect(jp('payMethod.detail.(name=newName)')).to.be.a('object').with.all.keys('newName');
+
+        expect(jp('payMethod.(detail=newDetail|method=newMethod).name')).to.be.a('object')
+            .with.all.keys('newDetail', 'newMethod')
+            .with.property('newMethod')
+                .that.is.an('object')
+                .with.all.keys('name');
+
+        expect(jp('payMethod.(detail=newDetail|method=newMethod).(name=newName)')).to.be.a('object')
+            .with.all.keys('newDetail', 'newMethod')
+            .with.property('newMethod')
+                .that.is.an('object')
+                .with.all.keys('newName');
+        
+        expect(jp('(goods).(items=newItems).(name=newName|price=newPrice)')).to.be.a('object')
+            .with.deep.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2)
+                .with.deep.property('[0]')
+                .with.all.keys('newItems')
+                .with.property('newItems')
+                    .that.is.an('array')
+                    .that.have.lengthOf(2)
+                    .with.deep.property('[0]')
+                        .with.all.keys('newName');
+
+        expect(jp('(goods).(items=newItems).(name=newName|price=newPrice)')).to.be.a('object')
+            .with.deep.property('goods')
+                .that.is.an('array')
+                .that.have.lengthOf(2)
+                .with.deep.property('[1]')
+                .with.all.keys('newItems')
+                .with.property('newItems')
+                    .that.is.an('array')
+                    .that.have.lengthOf(1)
+                    .with.deep.property('[0]')
+                        .with.all.keys('newName', 'newPrice');
     });
 });

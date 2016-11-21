@@ -69,7 +69,7 @@
                             if (hasSubPath){
                                 subPathValue = innerPick(data[pathName], pathArray.slice());
                                 subPathValue && (tmp[newPathName] = subPathValue);
-                            } else {
+                            } else if (pathName in data) {
                                 tmp[newPathName] = data[pathName];
                             }
                             arr = subNameValueReg.exec(curPathName);

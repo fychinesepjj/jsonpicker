@@ -1,9 +1,8 @@
 {
-  "name": "jspicker",
+  "name": "jsonpicker",
   "description": "js object picker",
   "version": "",
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.10.2",
