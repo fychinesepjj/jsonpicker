@@ -14,6 +14,18 @@
     }
 }(this, function () {
     var utils = {
+        startsWith: function startsWith(str, prefix) {
+            if (!this.isString(str)) {
+                return false;
+            }
+            if (!this.isString(str)) {
+                return false;
+            }
+            if (str.startsWith) {
+                return str.startsWith(prefix);
+            }
+            return str[0] === prefix;
+        },
         trimRight: function trimRight(innerStr, keyWord) {
             var escapedWord = keyWord.replace(/([\[\]\/.()])/g, '\\$1');
             var reg = new RegExp(escapedWord + '\\s*$');
@@ -41,13 +53,69 @@
     };
 
     var jsonPicker = {
+        _cache: {},
+        clearCache: function () {
+            this._cache = {};
+        },
+        transform: function (data, dataTpl) {
+            var thisJsonPicker = this;
+            var pathFormat = /{{(\s*([*|\S]+)*\s*)}}/;
+
+            function pickData(key, value) {
+                var path = '';
+                var pickedData = null;
+                var canEvalValue = false;
+                var searchPathResult = pathFormat.exec(value);
+                if (searchPathResult) {
+                    path = searchPathResult[2];
+                    if (utils.startsWith(path, '*')) {
+                        canEvalValue = true;
+                        path = path.substring(1);
+                    }
+                    pickedData = thisJsonPicker.pick(data, path);
+                    if (canEvalValue && pickedData && utils.isPlainObject(pickedData) && key in pickedData) {
+                        return pickedData[key];
+                    }
+                    return pickedData;
+                }
+                return value;
+            }
+
+            function innerTransform(tData) {
+                if (utils.isPlainObject(tData)) {
+                    var innerData = {};
+                    for (var key in tData) {
+                        if (tData.hasOwnProperty(key)) {
+                            var value = tData[key];
+                            if (utils.isString(value)) {
+                                innerData[key] = pickData(key, value);
+                            } else {
+                                innerData[key] = innerTransform(value);
+                            }
+                        }
+                    }
+                    return innerData;
+                } else if(utils.isArray(tData)) {
+                    var innerArray = [];
+                    tData.forEach(function forEach(item) {
+                        innerArray.push(innerTransform(item));
+                    });
+                    return innerArray;
+                } else {
+                    return tData;
+                }
+            }
+
+            return innerTransform(dataTpl);
+        },
         pick: function pick(data, pathStr) {
-            if (!utils.isPlainObject(data)) {
-                throw new TypeError('parameter type error: search data should be a plain object!');
+            if (!utils.isPlainObject(data) && !utils.isArray(data)) {
+                throw new TypeError('parameter type error: search data should be a plain object or array!');
             }
             if (!utils.isString(pathStr)) {
                 throw new TypeError('parameter type error: search path must be a string type!');
             }
+
             var path = utils.trim(pathStr, '.');
             var pathArray = path.split('.');
             function innerPick(data, pathArray) {

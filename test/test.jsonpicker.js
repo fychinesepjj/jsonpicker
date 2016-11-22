@@ -78,13 +78,17 @@ describe('js/jsonpicker.js', function () {
         var invalidPathTest = function () {
             jsonPicker.pick({}, 123456);
         };
-        var validTest = function () {
+        var validTestObjData = function () {
             jsonPicker.pick({}, '');
+        };
+        var validTestArrData = function () {
+            jsonPicker.pick([], '');
         };
         expect(invalidDataTest).to.throw(TypeError, /parameter type error/);
         expect(nullPathTest).to.throw(TypeError, /parameter type error/);
         expect(invalidPathTest).to.throw(TypeError, /parameter type error/);
-        expect(validTest).not.to.throw(TypeError, /parameter type error/);
+        expect(validTestObjData).not.to.throw(TypeError, /parameter type error/);
+        expect(validTestArrData).not.to.throw(TypeError, /parameter type error/);
     });
 
     it('should return null when path do not exist', function() {
