@@ -58,6 +58,14 @@
             this._cache = {};
         },
         transform: function (data, dataTpl) {
+            if (!utils.isPlainObject(data) && !utils.isArray(data)) {
+                throw new TypeError('parameter type error: transform data should be a plain object or array!');
+            }
+
+            if (!utils.isPlainObject(dataTpl) && !utils.isArray(dataTpl)) {
+                throw new TypeError('parameter type error: transform dataTpl should be a plain object or array!');
+            }
+
             var thisJsonPicker = this;
             var pathFormat = /{{(\s*([*|\S]+)*\s*)}}/;
 
@@ -110,14 +118,15 @@
         },
         pick: function pick(data, pathStr) {
             if (!utils.isPlainObject(data) && !utils.isArray(data)) {
-                throw new TypeError('parameter type error: search data should be a plain object or array!');
+                throw new TypeError('parameter type error: pick data should be a plain object or array!');
             }
             if (!utils.isString(pathStr)) {
-                throw new TypeError('parameter type error: search path must be a string type!');
+                throw new TypeError('parameter type error: pick path must be a string type!');
             }
 
             var path = utils.trim(pathStr, '.');
             var pathArray = path.split('.');
+
             function innerPick(data, pathArray) {
                 var hasSubPath = !!pathArray.length;
                 if (utils.isPlainObject(data)) {
@@ -127,7 +136,7 @@
                     var hasParenthesis =  /\([^\)]*\)/.test(curPathName);
                     if(hasParenthesis){
                         var arr = null;
-                        var subNameValueReg = /([_0-9a-zA-Z-]+)\s*=?\s*([_0-9a-zA-Z-]*)/g;
+                        var subNameValueReg = /\|?([_0-9a-zA-Z-]+)\s*=?\s*([_0-9a-zA-Z-]*)/g;
                         arr = subNameValueReg.exec(curPathName);
                         while(arr) {
                             var pathName = arr[1];

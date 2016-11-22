@@ -7,7 +7,7 @@
         body, pre, code{
             font-family: Consolas, "微软雅黑";
         }
-        h1, h2, h3, pre {margin: 0;}
+        h1, h2, h3, pre {margin: 0 0 10px 0;}
         pre[method] {
             color: green;
             font-weight: bold;
@@ -69,6 +69,15 @@
             }
         ]
     };
+
+    var jsonTpl = {
+        "name": "abc",
+        "age": 12,
+        "likes": [1, 2, 3, 4],
+        "detail": "{{ payMethod.detail }}",
+        "method": "{{ *payMethod.method }}",
+        "detailInner": "{{ *payMethod.(detail=detailInner) }}"
+    };
     </script>
     <script src="./js/jsonpicker.js"></script>
 </head>
@@ -127,10 +136,19 @@
             }
         ]
     };
+
+    var jsonTpl = {
+        "name": "abc",
+        "age": 12,
+        "likes": [1, 2, 3, 4],
+        "detail": "{{ payMethod.detail }}",
+        "method": "{{ *payMethod.method }}",
+        "detailInner": "{{ *payMethod.(detail=detailInner) }}"
+    };
     </code>
     </pre>
     <div>
-        <h2>Usage:</h2>
+        <h2>[jsonPicker.pick] Usage:</h2>
         <pre method><code>jsonPicker.pick(jsonData, 'seller')</code></pre>
         <pre result><code>{"seller": "1000"}</code></pre><br/>
 
@@ -148,6 +166,32 @@
         
         <pre method><code>jsonPicker.pick(jsonData, 'payMethod.(detail=newDetail|method=newMethod).(name=newName)')</code></pre>
         <pre result><code>{"newDetail":{"newName":"cash"},"newMethod":{"newName":"card"}}</code></pre><br/>
+    </div>
+    <div>
+        <h2>[jsonPicker.transform] Usage:</h2>
+        <pre method><code>jsonPicker.transform(jsonData, jsonTpl)</code></pre>
+        <pre result><code>{
+    "name": "abc",
+    "age":12,
+    "likes":[1,2,3,4],
+    "detail":{
+        "detail":{
+            "money":"47.20",
+            "count":null,
+            "name":"cash"
+        }
+    },
+    "method":{
+        "name":"card"
+    },
+    "detailInner":{
+        "money":"47.20",
+        "count":null,
+        "name":"cash"
+    }
+}
+        </code>
+        </pre><br/>
     </div>
 </body>
 </html>
