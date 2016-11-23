@@ -181,6 +181,7 @@ var jsonTpl = {
 
 ## Others
 How to test result?
+
 1. Run the demo.html page
 2. Open chrome's dev tool
 3. run code `jsonPicker.pick(jsonData, 'name')...`
