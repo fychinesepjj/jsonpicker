@@ -53,10 +53,6 @@
     };
 
     var jsonPicker = {
-        _cache: {},
-        clearCache: function () {
-            this._cache = {};
-        },
         transform: function (data, dataTpl) {
             if (!utils.isPlainObject(data) && !utils.isArray(data)) {
                 throw new TypeError('parameter type error: transform data should be a plain object or array!');
@@ -65,7 +61,7 @@
             if (!utils.isPlainObject(dataTpl) && !utils.isArray(dataTpl)) {
                 throw new TypeError('parameter type error: transform dataTpl should be a plain object or array!');
             }
-
+            var cache = {};
             var thisJsonPicker = this;
             var pathFormat = /{{(\s*([*|\S]+)*\s*)}}/;
 
@@ -80,7 +76,12 @@
                         canEvalValue = true;
                         path = path.substring(1);
                     }
-                    pickedData = thisJsonPicker.pick(data, path);
+                    if (cache[path]) {
+                        pickedData = cache[path];
+                    } else {
+                        pickedData = thisJsonPicker.pick(data, path);
+                        cache[path] = pickedData;
+                    }
                     if (canEvalValue && pickedData && utils.isPlainObject(pickedData) && key in pickedData) {
                         return pickedData[key];
                     }
